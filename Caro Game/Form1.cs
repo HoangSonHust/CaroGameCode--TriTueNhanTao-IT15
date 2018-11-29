@@ -32,7 +32,7 @@ namespace Caro_Game
 
         }
 
-       
+
 
         private void pnl_Board_Paint(object sender, PaintEventArgs e)
         {
@@ -51,6 +51,14 @@ namespace Caro_Game
             {
                 caroChess.FinishGame();
             }
+            if (caroChess.PlayMode == 2)
+            {
+                caroChess.InitComputer(grs);
+                if (caroChess.CheckWin())
+                {
+                    caroChess.FinishGame();
+                }
+            }
         }
 
         private void playerVsPlayerToolStripMenuItem_Click(object sender, EventArgs e)
@@ -67,7 +75,7 @@ namespace Caro_Game
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+
             caroChess.Undo(grs);
         }
 
@@ -78,7 +86,21 @@ namespace Caro_Game
 
         private void btnPlayerVsPlayer_Click(object sender, EventArgs e)
         {
-            PlayerVsPlayer(sender,e);
+            PlayerVsPlayer(sender, e);
+        }
+        private void PlayerVscom(object sender, EventArgs e)
+        {
+            grs.Clear(pnl_Board.BackColor);
+            caroChess.StartPlayerVsCom(grs);
+        }
+        private void BtnPlayerVsComputer_Click(object sender, EventArgs e)
+        {
+            PlayerVscom(sender, e);
+        }
+
+        private void playerVsComputerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PlayerVscom(sender, e);
         }
     }
 }

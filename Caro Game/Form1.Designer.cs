@@ -85,15 +85,16 @@
             // playerVsPlayerToolStripMenuItem
             // 
             this.playerVsPlayerToolStripMenuItem.Name = "playerVsPlayerToolStripMenuItem";
-            this.playerVsPlayerToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.playerVsPlayerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.playerVsPlayerToolStripMenuItem.Text = "Player vs Player";
             this.playerVsPlayerToolStripMenuItem.Click += new System.EventHandler(this.playerVsPlayerToolStripMenuItem_Click);
             // 
             // playerVsComputerToolStripMenuItem
             // 
             this.playerVsComputerToolStripMenuItem.Name = "playerVsComputerToolStripMenuItem";
-            this.playerVsComputerToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
+            this.playerVsComputerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.playerVsComputerToolStripMenuItem.Text = "Player vs Computer";
+            this.playerVsComputerToolStripMenuItem.Click += new System.EventHandler(this.playerVsComputerToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
@@ -113,14 +114,14 @@
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.undoToolStripMenuItem.Text = "Undo";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.undoToolStripMenuItem_Click);
             // 
             // redoToolStripMenuItem
             // 
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.redoToolStripMenuItem.Text = "Redo";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.redoToolStripMenuItem_Click);
             // 
@@ -156,6 +157,7 @@
             this.BtnPlayerVsComputer.TabIndex = 5;
             this.BtnPlayerVsComputer.Text = "Player Vs Computer";
             this.BtnPlayerVsComputer.UseVisualStyleBackColor = true;
+            this.BtnPlayerVsComputer.Click += new System.EventHandler(this.BtnPlayerVsComputer_Click);
             // 
             // BtnNewGame
             // 

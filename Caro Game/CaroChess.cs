@@ -28,7 +28,10 @@ namespace Caro_Game
         {
             get { return _Ready; }
         }
-
+        public int PlayMode
+        {
+            get { return _PlayMode; }
+        }
 
         public CaroChess()
         {
@@ -140,6 +143,7 @@ namespace Caro_Game
             _PlayMode = 2;
             InitArrayBox();
             DrawBoard(g);
+            InitComputer(g);
         }
         #region AI
         private long[] ArrayAttackPoint = new long[7] { 0, 3, 24, 192, 1536, 12288, 98304 };
@@ -160,7 +164,7 @@ namespace Caro_Game
         private Box FindTurn()
         {
             Box boxResult = new Box();
-            long TotalMax = 0;
+            long totalMax = 0;
             for (int i = 0; i < _Board.NumberofRow; i++)
             {
                 for (int j = 0; j < _Board.NumberOfColumn; j++)
@@ -169,15 +173,19 @@ namespace Caro_Game
                     {
                         long attackPoint = attackPoint_Vertical(i, j) + attackPoint_Horizontal(i, j) + attackPoint_DiagonalFromLeftToRight(i, j) + attackPoint_DiagonalFromRightToLeft(i, j);
                         long defendPoint = defendPoint_Vertical(i, j) + defendPoint_Horizontal(i, j) + defendPoint_DiagonalFromLeftToRight(i, j) + defendPoint_DiagonalFromRightToLeft(i, j);
+                        long temPoint = attackPoint > defendPoint ? attackPoint : defendPoint;
+                        if (totalMax < temPoint)
+                        {
+                            totalMax = temPoint;
+                            boxResult = new Box(_ArrayBox[i, j].Row, _ArrayBox[i, j].Column, _ArrayBox[i, j].Location, _ArrayBox[i, j].OwnBy);
+                        }
                     }
                 }
             }
-
-
-
+            
             return boxResult;
         }
-
+        #region Attack
         private long attackPoint_Vertical(int currRow, int currColumn)
         {
             long totalPoint = 0;
@@ -187,7 +195,7 @@ namespace Caro_Game
             // bây giờ sẽ lấy box đang xét làm tâm để duyệt từ từ dưới lên và trên xuống tính xem cột đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
             //duyệt từ trên xuống
             //tranh trường hợp ta đang xét ở hàng 16 17 18 ... , nếu count =5 thì 16+5>20 gây tràn 
-            for (int count = 0; count < 6 && currRow + count < _Board.NumberofRow; count++)
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow; count++)
             {
                 if (_ArrayBox[currRow + count, currColumn].OwnBy == 1)
                 {
@@ -205,7 +213,7 @@ namespace Caro_Game
             }
             //duyệt từ dưới lên
             // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
-            for (int count = 0; count < 6 && currRow - count >= 0; count++)
+            for (int count = 1; count < 6 && currRow - count >= 0; count++)
             {
                 if (_ArrayBox[currRow - count, currColumn].OwnBy == 1)
                 {
@@ -231,7 +239,6 @@ namespace Caro_Game
             totalPoint = totalPoint + attackPoint;
             return totalPoint;
         }
-
         private long attackPoint_Horizontal(int currRow, int currColumn)
         {
             long totalPoint = 0;
@@ -241,7 +248,7 @@ namespace Caro_Game
             // bây giờ sẽ lấy box đang xét làm tâm để duyệt sang trái và sang phải tính xem dòng đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
             //duyệt giữa về trái
             //tranh trường hợp ta đang xét ở hàng 16 17 18 ... , nếu count =5 thì 16+5>20 gây tràn 
-            for (int count = 0; count < 6 && currColumn-count>=0; count++)
+            for (int count = 1; count < 6 && currColumn - count >= 0; count++)
             {
                 if (_ArrayBox[currRow, currColumn - count].OwnBy == 1)
                 {
@@ -252,25 +259,25 @@ namespace Caro_Game
                     boxPlayer++;
                     break;
                 }
-                else if (_ArrayBox[currRow , currColumn - count].OwnBy == 0)
+                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 0)
                 {
                     break;
                 }
             }
             //duyệt từ giữa đi phải
             // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
-            for (int count = 0; count < 6 && currRow + count <_Board.NumberOfColumn; count++)
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberOfColumn; count++)
             {
-                if (_ArrayBox[currRow , currColumn+ count].OwnBy == 1)
+                if (_ArrayBox[currRow + count, currColumn ].OwnBy == 1)
                 {
                     boxCom++;
                 }
-                else if (_ArrayBox[currRow , currColumn + count].OwnBy == 2)
+                else if (_ArrayBox[currRow + count, currColumn ].OwnBy == 2)
                 {
                     boxPlayer++;
                     break;
                 }
-                else if (_ArrayBox[currRow , currColumn + count].OwnBy == 0)
+                else if (_ArrayBox[currRow + count, currColumn ].OwnBy == 0)
                 {
                     break;
                 }
@@ -291,39 +298,36 @@ namespace Caro_Game
             long attackPoint = 0;
             int boxPlayer = 0;
             int boxCom = 0;
-            // bây giờ sẽ lấy box đang xét làm tâm để duyệt sang trái và sang phải tính xem dòng đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
-            //duyệt giữa về trái
-            //tranh trường hợp ta đang xét ở hàng 16 17 18 ... , nếu count =5 thì 16+5>20 gây tràn 
-            for (int count = 0; count < 6 && currColumn - count >= 0; count++)
+
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn + count < _Board.NumberOfColumn; count++)
             {
-                if (_ArrayBox[currRow, currColumn - count].OwnBy == 1)
+                if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 1)
                 {
                     boxCom++;
                 }
-                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 2)
+                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 2)
                 {
                     boxPlayer++;
                     break;
                 }
-                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 0)
+                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 0)
                 {
                     break;
                 }
             }
-            //duyệt từ giữa đi phải
-            // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
-            for (int count = 0; count < 6 && currRow + count < _Board.NumberOfColumn; count++)
+
+            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn - count >= 0; count++)
             {
-                if (_ArrayBox[currRow, currColumn + count].OwnBy == 1)
+                if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 1)
                 {
                     boxCom++;
                 }
-                else if (_ArrayBox[currRow, currColumn + count].OwnBy == 2)
+                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 2)
                 {
                     boxPlayer++;
                     break;
                 }
-                else if (_ArrayBox[currRow, currColumn + count].OwnBy == 0)
+                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 0)
                 {
                     break;
                 }
@@ -344,39 +348,36 @@ namespace Caro_Game
             long attackPoint = 0;
             int boxPlayer = 0;
             int boxCom = 0;
-            // bây giờ sẽ lấy box đang xét làm tâm để duyệt sang trái và sang phải tính xem dòng đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
-            //duyệt giữa về trái
-            //tranh trường hợp ta đang xét ở hàng 16 17 18 ... , nếu count =5 thì 16+5>20 gây tràn 
-            for (int count = 0; count < 6 && currColumn - count >= 0; count++)
+
+            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn + count < _Board.NumberOfColumn; count++)
             {
-                if (_ArrayBox[currRow, currColumn - count].OwnBy == 1)
+                if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 1)
                 {
                     boxCom++;
                 }
-                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 2)
+                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 2)
                 {
                     boxPlayer++;
                     break;
                 }
-                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 0)
+                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 0)
                 {
                     break;
                 }
             }
-            //duyệt từ giữa đi phải
-            // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
-            for (int count = 0; count < 6 && currRow + count < _Board.NumberOfColumn; count++)
+
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn - count >= 0; count++)
             {
-                if (_ArrayBox[currRow, currColumn + count].OwnBy == 1)
+                if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 1)
                 {
                     boxCom++;
                 }
-                else if (_ArrayBox[currRow, currColumn + count].OwnBy == 2)
+                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 2)
                 {
                     boxPlayer++;
                     break;
                 }
-                else if (_ArrayBox[currRow, currColumn + count].OwnBy == 0)
+                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 0)
                 {
                     break;
                 }
@@ -391,27 +392,224 @@ namespace Caro_Game
             totalPoint = totalPoint + attackPoint;
             return totalPoint;
         }
+        #endregion
+
+        #region Defend
         private long defendPoint_Vertical(int currRow, int currColumn)
         {
             long totalPoint = 0;
+            long defendPoint = 0;
+            int boxPlayer = 0;
+            int boxCom = 0;
+            // bây giờ sẽ lấy box đang xét làm tâm để duyệt từ từ dưới lên và trên xuống tính xem cột đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
+            //duyệt từ trên xuống
+            //tranh trường hợp ta đang xét ở hàng 16 17 18 ... , nếu count =5 thì 16+5>20 gây tràn 
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow; count++)
+            {
+                if (_ArrayBox[currRow + count, currColumn].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow + count, currColumn].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow + count, currColumn].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+            //duyệt từ dưới lên
+            // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
+            for (int count = 1; count < 6 && currRow - count >= 0; count++)
+            {
+                if (_ArrayBox[currRow - count, currColumn].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow - count, currColumn].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow - count, currColumn].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            if (boxCom == 2)
+            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
+                return 0;
+            }
+            // totalPoint = totalPoint - ArrayDefendPoint[boxPlayer + 1];
+            defendPoint = ArrayAttackPoint[boxPlayer];
+            totalPoint = totalPoint + defendPoint;
             return totalPoint;
         }
-
         private long defendPoint_Horizontal(int currRow, int currColumn)
         {
             long totalPoint = 0;
+            long defendPoint = 0;
+            int boxPlayer = 0;
+            int boxCom = 0;
+            // bây giờ sẽ lấy box đang xét làm tâm để duyệt sang trái và sang phải tính xem dòng đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
+            //duyệt giữa về trái
+            //tranh trường hợp ta đang xét ở hàng 16 17 18 ... , nếu count =5 thì 16+5>20 gây tràn 
+            for (int count = 1; count < 6 && currColumn - count >= 0; count++)
+            {
+                if (_ArrayBox[currRow, currColumn - count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow, currColumn - count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+            //duyệt từ giữa đi phải
+            // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberOfColumn; count++)
+            {
+                if (_ArrayBox[currRow + count, currColumn ].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow + count, currColumn ].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow + count, currColumn].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            if (boxCom == 2)
+            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
+                return 0;
+            }
+            //   totalPoint = totalPoint - ArrayDefendPoint[boxPlayer + 1];
+            defendPoint = ArrayAttackPoint[boxPlayer];
+            totalPoint = totalPoint + defendPoint;
             return totalPoint;
         }
         private long defendPoint_DiagonalFromLeftToRight(int currRow, int currColumn)
         {
             long totalPoint = 0;
+            long defendPoint = 0;
+            int boxPlayer = 0;
+            int boxCom = 0;
+
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn + count < _Board.NumberOfColumn; count++)
+            {
+                if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn - count >= 0; count++)
+            {
+                if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            if (boxCom == 2)
+            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
+                return 0;
+            }
+            // totalPoint = totalPoint - ArrayDefendPoint[boxPlayer + 1];
+            defendPoint = ArrayAttackPoint[boxPlayer];
+            totalPoint = totalPoint + defendPoint;
             return totalPoint;
         }
         private long defendPoint_DiagonalFromRightToLeft(int currRow, int currColumn)
         {
             long totalPoint = 0;
+            long defendPoint = 0;
+            int boxPlayer = 0;
+            int boxCom = 0;
+
+            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn + count < _Board.NumberOfColumn; count++)
+            {
+                if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn - count >= 0; count++)
+            {
+                if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            if (boxCom == 2)
+            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
+                return 0;
+            }
+            // totalPoint = totalPoint - ArrayDefendPoint[boxPlayer + 1];
+            defendPoint = ArrayAttackPoint[boxPlayer];
+            totalPoint = totalPoint + defendPoint;
             return totalPoint;
         }
+        #endregion
         #endregion
 
         #region Undo_Reddo
