@@ -8,12 +8,26 @@ namespace Caro_Game
     {
         private CaroChess caroChess;
         private Graphics grs;
+        private Board board;
+        private String Name1;
+        private MessageInputName1 messageInputName1;
+        public frmCaroBoard(string name1)
+        {
+            Name1 = name1;
+
+        }
+
         public frmCaroBoard()
         {
             InitializeComponent();
             caroChess = new CaroChess();
+            board = new Board();
             caroChess.InitArrayBox();
             grs = pnl_Board.CreateGraphics();
+           
+
+           // messageInputName1 = new MessageInputName1();
+            
         }
         // cho chữ di chuyển 
         private void tmMoveWord_Tick(object sender, EventArgs e)
@@ -27,16 +41,18 @@ namespace Caro_Game
 
         private void frmCaroBoard_Load(object sender, EventArgs e)
         {
-            lblRule.Text = "welcome my caro Game. Today, let's play \nfun and win";
+            
+            lblRule.Text = "welcome"/* + Name1 +*/+"my caro Game. Today, let's play \nfun and win";
             tmMoveWord.Enabled = true; // cho enble sau vì nếu chưa gán chữ thì đã chạy rồi
 
         }
 
 
-
+        //hàm để vẽ bàn cờ
         private void pnl_Board_Paint(object sender, PaintEventArgs e)
-        {
+        {// vẽ bàn cờ
             caroChess.DrawBoard(grs);
+            //repain bàn cờ
             caroChess.RepainBox(grs);
         }
         // click vào bàn cờ để lấy vị trí của chuột
@@ -46,17 +62,23 @@ namespace Caro_Game
             {
                 return;
             }
-            caroChess.PlayChess(e.X, e.Y, grs);
-            if (caroChess.CheckWin())
+            if (caroChess.PlayChess(e.X, e.Y, grs) == true)
             {
-                caroChess.FinishGame();
-            }
-            if (caroChess.PlayMode == 2)
-            {
-                caroChess.InitComputer(grs);
+                ;
                 if (caroChess.CheckWin())
                 {
                     caroChess.FinishGame();
+                }
+                else
+                {
+                    if (caroChess.PlayMode == 2)
+                    {
+                        caroChess.InitComputer(grs);
+                        if (caroChess.CheckWin())
+                        {
+                            caroChess.FinishGame();
+                        }
+                    }
                 }
             }
         }

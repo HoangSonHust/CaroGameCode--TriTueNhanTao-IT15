@@ -24,8 +24,8 @@ namespace Caro_Game
 
         public Board(int Row, int Column) // hàm khởi tạo để chuyền tham số bàn cờ
         {
-            _NumberOfRow = Row;
-            _NumberOfColumn = Column;
+            _NumberOfRow = 20;
+            _NumberOfColumn = 20;
         }
         public void DrawBoard(Graphics g) // vẽ bàn cờ
         {//chạy vòng lặp để vẽ các cột

@@ -2,6 +2,7 @@
 {
     partial class frmCaroBoard
     {
+       
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -79,27 +80,27 @@
             this.playerVsPlayerToolStripMenuItem,
             this.playerVsComputerToolStripMenuItem});
             this.newGameToolStripMenuItem.Name = "newGameToolStripMenuItem";
-            this.newGameToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newGameToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.newGameToolStripMenuItem.Text = "New Game";
             // 
             // playerVsPlayerToolStripMenuItem
             // 
             this.playerVsPlayerToolStripMenuItem.Name = "playerVsPlayerToolStripMenuItem";
-            this.playerVsPlayerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.playerVsPlayerToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.playerVsPlayerToolStripMenuItem.Text = "Player vs Player";
             this.playerVsPlayerToolStripMenuItem.Click += new System.EventHandler(this.playerVsPlayerToolStripMenuItem_Click);
             // 
             // playerVsComputerToolStripMenuItem
             // 
             this.playerVsComputerToolStripMenuItem.Name = "playerVsComputerToolStripMenuItem";
-            this.playerVsComputerToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.playerVsComputerToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
             this.playerVsComputerToolStripMenuItem.Text = "Player vs Computer";
             this.playerVsComputerToolStripMenuItem.Click += new System.EventHandler(this.playerVsComputerToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(132, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // editToolStripMenuItem
@@ -227,6 +228,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmCaroBoard";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Caro Game";
             this.Load += new System.EventHandler(this.frmCaroBoard_Load);
             this.menuStrip1.ResumeLayout(false);
