@@ -23,11 +23,34 @@ namespace Caro_Game
         private Stack<Box> Stack_Redo;
         private FINISH _Finish;
 
+        public Option option;
+        public string Name1;
+        public string Name2;
+        public string Name;
+        public bool playerFist;
+        public bool comFirst;
+
+
+        public void optionForm1(string name1, string name2)
+        {
+            this.Name1 = name1;
+            this.Name2 = name2;
+
+        }
+        public void optionForm2(string name, bool playerFist, bool comFirst)
+        {
+
+            this.Name = name;
+            this.playerFist = playerFist;
+            this.comFirst = comFirst;
+        }
         //viết 1 đóng gói
         public bool Ready
         {
             get { return _Ready; }
         }
+
+
         public int PlayMode
         {
             get { return _PlayMode; }
@@ -44,6 +67,7 @@ namespace Caro_Game
             Stack_Step = new Stack<Box>();
             Stack_Redo = new Stack<Box>();
             _Turn = 1;
+
         }
 
         public void DrawBoard(Graphics g)
@@ -77,7 +101,7 @@ namespace Caro_Game
             int Column = MouseX / Box._BoxWidth; // vdu chuột có X=76, chiều rộng 25=> 76/25=3.04 lấy nguyên là 3=> cột 3
             int Row = MouseY / Box._BoxHeight;// tương tự như trên
                                               // truyền vào Board g(graphics), 
-           
+
             if (_ArrayBox[Row, Column].OwnBy != 0)
             {
                 return false;
@@ -148,15 +172,22 @@ namespace Caro_Game
         private long[] ArrayDefendPoint = new long[7] { 0, 4, 256, 2048, 16384, 6561, 131072 };
         public void InitComputer(Graphics g)
         {
-            if (Stack_Step.Count == 0)
+         /*   if (comFirst == true)
+            {*/
+                if (Stack_Step.Count == 0)
+                {
+                    PlayChess(_Board.NumberOfColumn / 2 * Box._BoxWidth + 1, _Board.NumberofRow / 2 * Box._BoxHeight + 1, g);
+                }
+                else
+                {
+                    Box box = FindTurn();
+                    PlayChess(box.Location.X + 1, box.Location.Y + 1, g);
+                }
+           /* }
+            if (playerFist == true)
             {
-                PlayChess(_Board.NumberOfColumn / 2 * Box._BoxWidth + 1, _Board.NumberofRow / 2 * Box._BoxHeight + 1, g);
-            }
-            else
-            {
-                Box box = FindTurn();
-                PlayChess(box.Location.X + 1, box.Location.Y + 1, g);
-            }
+
+            }*/
         }
 
         private Box FindTurn()
@@ -178,21 +209,21 @@ namespace Caro_Game
                         long attackPoint = attackPoint_Vertical(i, j) + attackPoint_Horizontal(i, j) + attackPoint_DiagonalFromLeftToRight(i, j) + attackPoint_DiagonalFromRightToLeft(i, j);
                         long defendPoint = defendPoint_Vertical(i, j) + defendPoint_Horizontal(i, j) + defendPoint_DiagonalFromLeftToRight(i, j) + defendPoint_DiagonalFromRightToLeft(i, j);
                         long temPoint = attackPoint > defendPoint ? attackPoint : defendPoint;
-                      /*  if (attackPoint <= defendPoint)
-                        {
-                            if (totalMax < defendPoint)
-                            {
-                                totalMax = defendPoint;
-                                boxResult = new Box(_ArrayBox[i, j].Row, _ArrayBox[i, j].Column, _ArrayBox[i, j].Location, _ArrayBox[i, j].OwnBy);
+                        /*  if (attackPoint <= defendPoint)
+                          {
+                              if (totalMax < defendPoint)
+                              {
+                                  totalMax = defendPoint;
+                                  boxResult = new Box(_ArrayBox[i, j].Row, _ArrayBox[i, j].Column, _ArrayBox[i, j].Location, _ArrayBox[i, j].OwnBy);
 
-                            }
-                        }
-                        else
-                        {
-                            if (totalMax < attackPoint) { 
-                            totalMax = attackPoint;
-                            }
-                        }*/
+                              }
+                          }
+                          else
+                          {
+                              if (totalMax < attackPoint) { 
+                              totalMax = attackPoint;
+                              }
+                          }*/
 
                         if (totalMax < temPoint)
                         {
@@ -210,7 +241,7 @@ namespace Caro_Game
         {
             long totalPoint = 0;
             long PointTemp = 0;
-          //  long attackPoint = 0;
+            //  long attackPoint = 0;
             int boxPlayer = 0;
             int boxCom = 0;
             // bây giờ sẽ lấy box đang xét làm tâm để duyệt từ từ dưới lên và trên xuống tính xem cột đó có bao nhiêu quân ta, bao nhiêu quân địch và trống?
@@ -258,8 +289,8 @@ namespace Caro_Game
                 return 0;
             }
             //attackPoint = ArrayAttackPoint[boxCom];
-            totalPoint = ArrayAttackPoint[boxCom] - ArrayAttackPoint[boxPlayer] ;
-            totalPoint = totalPoint -PointTemp;
+            totalPoint = ArrayAttackPoint[boxCom] - ArrayAttackPoint[boxPlayer];
+            totalPoint = totalPoint - PointTemp;
             return totalPoint;
         }
         private long attackPoint_Horizontal(int currRow, int currColumn)
@@ -321,7 +352,59 @@ namespace Caro_Game
         {
             long totalPoint = 0;
             long PointTemp = 0;
-          //  long attackPoint = 0;
+            //  long attackPoint = 0;
+            int boxPlayer = 0;
+            int boxCom = 0;
+
+            for (int count = 1; count < 6 && /*currRow + count < _Board.NumberofRow*/  currRow - count >= 0 && currColumn + count < _Board.NumberOfColumn; count++)
+            {
+                if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 1)
+                {
+                    boxCom++;
+                }
+                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 2)
+                {
+                    boxPlayer++;
+                    PointTemp -= ArrayAttackPoint[1];
+                    break;
+                }
+                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn - count >= 0; count++)
+            {
+                if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 1)
+                {
+                    boxCom++;
+                }
+                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 2)
+                {
+                    boxPlayer++;
+                    PointTemp -= ArrayAttackPoint[1];
+                    break;
+                }
+                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            if (boxPlayer == 2)
+            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
+                return 0;
+            }
+            totalPoint = ArrayAttackPoint[boxCom] - ArrayAttackPoint[boxPlayer];
+            totalPoint = totalPoint - PointTemp;
+            return totalPoint;
+        }
+        private long attackPoint_DiagonalFromRightToLeft(int currRow, int currColumn)
+        {
+            long totalPoint = 0;
+            long PointTemp = 0;
+            //  long attackPoint = 0;
             int boxPlayer = 0;
             int boxCom = 0;
 
@@ -356,58 +439,6 @@ namespace Caro_Game
                     break;
                 }
                 else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 0)
-                {
-                    break;
-                }
-            }
-
-            if (boxPlayer == 2)
-            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
-                return 0;
-            }
-            totalPoint = ArrayAttackPoint[boxCom] - ArrayAttackPoint[boxPlayer];
-            totalPoint = totalPoint - PointTemp;
-            return totalPoint;
-        }
-        private long attackPoint_DiagonalFromRightToLeft(int currRow, int currColumn)
-        {
-            long totalPoint = 0;
-            long PointTemp = 0;
-            //  long attackPoint = 0;
-            int boxPlayer = 0;
-            int boxCom = 0;
-
-            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn + count < _Board.NumberOfColumn; count++)
-            {
-                if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 1)
-                {
-                    boxCom++;
-                }
-                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 2)
-                {
-                    boxPlayer++;
-                    PointTemp -= ArrayAttackPoint[1];
-                    break;
-                }
-                else if (_ArrayBox[currRow - count, currColumn + count].OwnBy == 0)
-                {
-                    break;
-                }
-            }
-
-            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn - count >= 0; count++)
-            {
-                if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 1)
-                {
-                    boxCom++;
-                }
-                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 2)
-                {
-                    boxPlayer++;
-                    PointTemp -= ArrayAttackPoint[1];
-                    break;
-                }
-                else if (_ArrayBox[currRow + count, currColumn - count].OwnBy == 0)
                 {
                     break;
                 }
@@ -479,7 +510,7 @@ namespace Caro_Game
             totalPoint = totalPoint + defendPoint;
             if (boxPlayer > 0)
             {
-                totalPoint= totalPoint - ArrayAttackPoint[boxCom] * 2;
+                totalPoint = totalPoint - ArrayAttackPoint[boxCom] * 2;
             }
             return totalPoint;
         }
@@ -511,19 +542,19 @@ namespace Caro_Game
             }
             //duyệt từ giữa đi phải
             // tránh trường hợp xét ô thứ 4 3 .., nếu count =5 =>4-5<0 gây tràn, sai
-            for (int count = 1; count < 6 && currRow + count < _Board.NumberOfColumn; count++)
+            for (int count = 1; count < 6 && currColumn + count < _Board.NumberOfColumn; count++)
             {
-                if (_ArrayBox[currRow + count, currColumn].OwnBy == 1)
+                if (_ArrayBox[currRow, currColumn + count].OwnBy == 1)
                 {
                     boxCom++;
                     break;
                 }
-                else if (_ArrayBox[currRow + count, currColumn].OwnBy == 2)
+                else if (_ArrayBox[currRow, currColumn + count].OwnBy == 2)
                 {
                     boxPlayer++;
 
                 }
-                else if (_ArrayBox[currRow + count, currColumn].OwnBy == 0)
+                else if (_ArrayBox[currRow, currColumn + count].OwnBy == 0)
                 {
                     break;
                 }
@@ -543,62 +574,6 @@ namespace Caro_Game
             return totalPoint;
         }
         private long defendPoint_DiagonalFromLeftToRight(int currRow, int currColumn)
-        {
-            long totalPoint = 0;
-            long defendPoint = 0;
-            int boxPlayer = 0;
-            int boxCom = 0;
-
-            for (int count = 1; count < 6 && currRow + count < _Board.NumberofRow && currColumn + count < _Board.NumberOfColumn; count++)
-            {
-                if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 1)
-                {
-                    boxCom++;
-                    break;
-                }
-                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 2)
-                {
-                    boxPlayer++;
-
-                }
-                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 0)
-                {
-                    break;
-                }
-            }
-
-            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn - count >= 0; count++)
-            {
-                if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 1)
-                {
-                    boxCom++;
-                    break;
-                }
-                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 2)
-                {
-                    boxPlayer++;
-
-                }
-                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 0)
-                {
-                    break;
-                }
-            }
-
-            if (boxCom == 2)
-            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
-                return 0;
-            }
-            // totalPoint = totalPoint - ArrayDefendPoint[boxPlayer + 1];
-            defendPoint = ArrayDefendPoint[boxPlayer];
-            totalPoint = totalPoint + defendPoint;
-            if (boxPlayer > 0)
-            {
-                totalPoint = totalPoint - ArrayAttackPoint[boxCom] * 2;
-            }
-            return totalPoint;
-        }
-        private long defendPoint_DiagonalFromRightToLeft(int currRow, int currColumn)
         {
             long totalPoint = 0;
             long defendPoint = 0;
@@ -654,6 +629,62 @@ namespace Caro_Game
             }
             return totalPoint;
         }
+        private long defendPoint_DiagonalFromRightToLeft(int currRow, int currColumn)
+        {
+            long totalPoint = 0;
+            long defendPoint = 0;
+            int boxPlayer = 0;
+            int boxCom = 0;
+
+            for (int count = 1; count < 6 && currRow + count > _Board.NumberofRow && currColumn + count < _Board.NumberOfColumn; count++)
+            {
+                if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow + count, currColumn + count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            for (int count = 1; count < 6 && currRow - count >= 0 && currColumn - count >= 0; count++)
+            {
+                if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 1)
+                {
+                    boxCom++;
+                    break;
+                }
+                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 2)
+                {
+                    boxPlayer++;
+
+                }
+                else if (_ArrayBox[currRow - count, currColumn - count].OwnBy == 0)
+                {
+                    break;
+                }
+            }
+
+            if (boxCom == 2)
+            {//vì khi nếu 1 hướng có địch thì ta tăng số địch và break lặp => nếu có 2 thì => chặn trên và dưới rồi=> hướng dọc này như phế
+                return 0;
+            }
+            // totalPoint = totalPoint - ArrayDefendPoint[boxPlayer + 1];
+            defendPoint = ArrayDefendPoint[boxPlayer];
+            totalPoint = totalPoint + defendPoint;
+            if (boxPlayer > 0)
+            {
+                totalPoint = totalPoint - ArrayAttackPoint[boxCom] * 2;
+            }
+            return totalPoint;
+        }
         #endregion
         #endregion
 
@@ -672,7 +703,7 @@ namespace Caro_Game
                     {
                         _Turn = 2;
                     }
-                    if (_Turn == 2)
+                    else/* (_Turn == 2)*/
                     {
                         _Turn = 1;
                     }
@@ -701,7 +732,25 @@ namespace Caro_Game
         }
         public void Redo(Graphics g)
         {//nếu stack hết thì ta ko cho pop nữa
-            if (Stack_Redo.Count > 0)
+            if (_PlayMode == 1)
+            {
+                if (Stack_Redo.Count > 0)
+                {
+                    Box box = Stack_Redo.Pop();
+                    Stack_Step.Push(new Box(box.Row, box.Column, box.Location, box.OwnBy));
+                    _ArrayBox[box.Row, box.Column].OwnBy = box.OwnBy;
+                    _Board.DrawBox(g, box.Location, box.OwnBy == 1 ? sbBlack : sbWhite);
+                    if (_Turn == 1)
+                    {
+                        _Turn = 2;
+                    }
+                    else
+                    {
+                        _Turn = 1;
+                    }
+                }
+            }
+            if (_PlayMode == 2)
             {
                 Box box = Stack_Redo.Pop();
                 Stack_Step.Push(new Box(box.Row, box.Column, box.Location, box.OwnBy));
@@ -716,7 +765,6 @@ namespace Caro_Game
                     _Turn = 1;
                 }
             }
-
 
         } //phải fix
         #endregion Undo_Redo

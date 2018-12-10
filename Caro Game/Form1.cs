@@ -9,25 +9,18 @@ namespace Caro_Game
         private CaroChess caroChess;
         private Graphics grs;
         private Board board;
-        private String Name1;
-        private MessageInputName1 messageInputName1;
-        public frmCaroBoard(string name1)
-        {
-            Name1 = name1;
-
-        }
-
+        private int mode;
+        private Option option;
         public frmCaroBoard()
         {
+
             InitializeComponent();
             caroChess = new CaroChess();
             board = new Board();
             caroChess.InitArrayBox();
+            option = new Option();
             grs = pnl_Board.CreateGraphics();
-           
 
-           // messageInputName1 = new MessageInputName1();
-            
         }
         // cho chữ di chuyển 
         private void tmMoveWord_Tick(object sender, EventArgs e)
@@ -41,9 +34,18 @@ namespace Caro_Game
 
         private void frmCaroBoard_Load(object sender, EventArgs e)
         {
-            
-            lblRule.Text = "welcome"/* + Name1 +*/+"my caro Game. Today, let's play \nfun and win";
-            tmMoveWord.Enabled = true; // cho enble sau vì nếu chưa gán chữ thì đã chạy rồi
+            /*if (mode == 1)
+            {*/
+                lblRule.Text = "welcome" + " my caro Game. Today, let's play \nfun and win";
+                tmMoveWord.Enabled = true; // cho enble sau vì nếu chưa gán chữ thì đã chạy rồi
+           /* }
+            if (mode == 2)
+            {
+
+
+                lblRule.Text = "welcome" + "my caro Game. Today, let's play \nfun and win";
+                tmMoveWord.Enabled = true; // cho enble sau vì nếu chưa gán chữ thì đã chạy rồi
+            }*/
 
         }
 
@@ -91,8 +93,20 @@ namespace Caro_Game
 
         private void PlayerVsPlayer(object sender, EventArgs e)
         {
+            this.mode = 1;
+            
+            option.setmode(1);
+            //option.Show();
+            option.Name1_txt.Enabled = true;
+            option.name2_txt.Enabled = true;
+            option.PlayerName_txt.Enabled = false;
+            option.PlayerFirst_rbtn.Enabled = false;
+            option.ComFirst_rbtn.Enabled = false;
             grs.Clear(pnl_Board.BackColor);
             caroChess.StartPlayerVsPlayer(grs);
+
+
+
         }
 
         private void undoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -112,6 +126,15 @@ namespace Caro_Game
         }
         private void PlayerVscom(object sender, EventArgs e)
         {
+            this.mode = 2;
+
+            option.setmode(2);
+            //option.Show();
+            option.Name1_txt.Enabled = false;
+            option.name2_txt.Enabled = false;
+            option.PlayerName_txt.Enabled = true;
+            option.PlayerFirst_rbtn.Enabled = true;
+            option.ComFirst_rbtn.Enabled = true;
             grs.Clear(pnl_Board.BackColor);
             caroChess.StartPlayerVsCom(grs);
         }
@@ -123,6 +146,11 @@ namespace Caro_Game
         private void playerVsComputerToolStripMenuItem_Click(object sender, EventArgs e)
         {
             PlayerVscom(sender, e);
+        }
+
+        private void BtnOption_Click(object sender, EventArgs e)
+        {
+            // option.Show();
         }
     }
 }

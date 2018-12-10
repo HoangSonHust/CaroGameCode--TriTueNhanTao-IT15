@@ -29,6 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            
             this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,7 +45,7 @@
             this.btnPlayerVsPlayer = new System.Windows.Forms.Button();
             this.BtnPlayerVsComputer = new System.Windows.Forms.Button();
             this.BtnNewGame = new System.Windows.Forms.Button();
-            this.BtnFinish = new System.Windows.Forms.Button();
+            this.BtnOption = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pnl_Board = new System.Windows.Forms.Panel();
             this.tmMoveWord = new System.Windows.Forms.Timer(this.components);
@@ -169,14 +170,15 @@
             this.BtnNewGame.Text = "New Game";
             this.BtnNewGame.UseVisualStyleBackColor = true;
             // 
-            // BtnFinish
+            // BtnOption
             // 
-            this.BtnFinish.Location = new System.Drawing.Point(118, 489);
-            this.BtnFinish.Name = "BtnFinish";
-            this.BtnFinish.Size = new System.Drawing.Size(97, 47);
-            this.BtnFinish.TabIndex = 7;
-            this.BtnFinish.Text = "Finish";
-            this.BtnFinish.UseVisualStyleBackColor = true;
+            this.BtnOption.Location = new System.Drawing.Point(118, 489);
+            this.BtnOption.Name = "BtnOption";
+            this.BtnOption.Size = new System.Drawing.Size(97, 47);
+            this.BtnOption.TabIndex = 7;
+            this.BtnOption.Text = "Option";
+            this.BtnOption.UseVisualStyleBackColor = true;
+         //   this.BtnOption.Click += new System.EventHandler(this.BtnOption_Click);
             // 
             // pictureBox1
             // 
@@ -218,7 +220,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
             this.ClientSize = new System.Drawing.Size(734, 561);
-            this.Controls.Add(this.BtnFinish);
+            this.Controls.Add(this.BtnOption);
             this.Controls.Add(this.pnlRule);
             this.Controls.Add(this.pnl_Board);
             this.Controls.Add(this.BtnNewGame);
@@ -257,7 +259,7 @@
         private System.Windows.Forms.Button btnPlayerVsPlayer;
         private System.Windows.Forms.Button BtnPlayerVsComputer;
         private System.Windows.Forms.Button BtnNewGame;
-        private System.Windows.Forms.Button BtnFinish;
+        private System.Windows.Forms.Button BtnOption;
         private System.Windows.Forms.Panel pnl_Board;
         private System.Windows.Forms.Label lblRule;
         private System.Windows.Forms.Timer tmMoveWord;
